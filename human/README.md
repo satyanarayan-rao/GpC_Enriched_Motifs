@@ -18,9 +18,16 @@ awk '{print $1}' filtered_hocomoco.tsv | sort | uniq > tf_with_gpc_motif_hocomoc
 ## For JASPAR file
 
 ```
-grep MOTIF 20250525090713_JASPAR2024_combined_matrices_981783_meme.txt | awk '{print $3}' | tr "." "\t" | awk '{print $3"\t"$1"."$2}' | grep -v "::" > all_tf_list_jaspar.tsv
+grep ^MOTIF 20250525090713_JASPAR2024_combined_matrices_981783_meme.txt | awk '{print $3}' | tr "." "\t" | awk '{print $3"\t"$1"."$2}' | grep -v "::" > tf_name_to_motif_id_map.tsv
+
+awk '{print $2"\t"$1}' tf_name_to_motif_id_map.tsv | python scripts/stdin_to_pkl.py tf_name_to_motif_id_map.pkl 
+
+
+awk -F'\t' '{print $NF}' tf_name_to_motif_id_map.tsv > all_tf_list_jaspar.tsv 
 
 sh scripts/split.sh jaspar
+
+
 ls individual_jaspar/*.meme > meme_list_jaspar.tsv
 
 sh scripts/run_for_all.sh  meme_list_jaspar.tsv > gpc_info_jaspar.tsv
